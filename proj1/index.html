@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="StyleProj1.css">
+    <script src="DataIng.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+    <title>My Kitchen</title>
+    <script>
+        console.log(ingredients);
+        
+        //Load the head, buttons and recipes
+         function init(){
+            cardsArr=[];
+            var name="Pasta penne";
+            var ingredients=[0,1,2,3];
+            var time=30;
+            var cookingMethod="Boil water, put everything together, enjoy";
+            var img="https://topteenrecipes.com/wp-content/uploads/2022/01/Creamy-Garlic-Penne-Pastauntitled_design__5_.jpg";
+            var NewCard= new DishRecipe(name,ingredients,time,cookingMethod,img);   
+            cardsArr.push(NewCard);
+            str1='';
+            str1+='<h1>Dishs</h1>';
+            document.getElementById("head").innerHTML=str1;
+            str2='';
+            str2+='<button id="btn1" onclick="btnRec()">New Recipe</button>';
+            str2+='<button id="btn2" onclick="btnIng()">New Ingredient</button>';
+            document.getElementById("btns").innerHTML=str2;
+            str3=RenderCards();
+            
+           
+        }
+
+        //new recipe
+        function btnRec() {
+            
+            strRec='';
+            strRec+='<div>';
+            strRec+='<br><strong>Recipe name :</strong><br>';
+            strRec+='<input id="RecName" type="text"><br><br>';
+            strRec+='<strong>Recipe cooking method:</strong><br>';
+            strRec+='<input id="RecMethod" type="text"><br><br>';
+            strRec+='<strong>Recipe cooking time:</strong><br>';
+            strRec+='<input id="RecTime" type="text"><br><br>';
+            strRec+='<strong>Recipe image (url):</strong><br>';
+            strRec+='<input id="RecImg" type="text"><br><br>';
+            strRec+='<h3>Choose ingredients</h3>';
+            strRec+='</div>';
+            document.getElementById("m1").innerHTML=strRec;  
+            strRec2='';
+            strRec2+= RenderIng();
+            document.getElementById("m2").innerHTML=strRec2;
+            strRec3='<div class="col-12">';
+            strRec3+='<button id="btn3" onclick="createCard()">Create Recipe</button>';
+            strRec3+='<button id="btn4" onclick="closeMain()">Close</button>';
+            strRec3+='</div><br>';
+            IngArr=[];
+            document.getElementById("m3").innerHTML=strRec3;
+                  
+        }
+        //new ingredient
+        function btnIng() {
+            strIng='';
+            strIng+='<div>';
+            strIng+='<br><strong>Ingredient name :</strong><br>';
+            strIng+='<input id="nameText" type="text"><br><br>';
+            strIng+='<strong>Ingredient image (url) :</strong><br>';
+            strIng+='<input id="imgText" type="text"><br><br>';
+            strIng+='<strong>Ingredient calories :</strong><br>';
+            strIng+='<input id="caloriesText" type="text"><br><br>';
+            strIng+='</div>';
+            document.getElementById("m1").innerHTML=strIng;    
+            strIng2='';
+            document.getElementById("m2").innerHTML=strIng2;
+            strIng3='<div class="col-12">';
+            strIng3+='<button id="btn3" onclick="createIng()">Create Ingredient</button>';
+            strIng3+='<button id="btn4" onclick="closeMain()">Close</button>';
+            strIng3+='</div><br>';
+            
+            document.getElementById("m3").innerHTML=strIng3;
+                  
+        }
+
+
+
+
+        //Render functions
+         function RenderIng() {
+             strIngCards='';
+             strIngCards+='<div class="row">';
+            
+            for (let i = 0; i < ingredients.length; i++) {
+                
+                strIngCards+='<div class="checkBox col-4">';
+                strIngCards+='add<input type="checkbox" id="'+i+'" onclick="check('+i+')">';
+                strIngCards+='<br><strong>ingredient details:</strong><br>';
+                strIngCards+='<img src="'+ingredients[i].img+'" alt="error"><br>';
+                strIngCards+=ingredients[i].name +'<br>';
+                strIngCards+='<p>calories: '+ingredients[i].calories+'</p>';                 
+                strIngCards+='</div>';
+
+            }
+            strIngCards+='</div>';
+            return strIngCards;
+
+        }
+        function RenderCards() {
+            counterCards=cardsArr.length-1;
+            strCard='';
+            for (let index = counterCards; index < cardsArr.length; index++) {
+            
+            strCard+='<div class="card col-4">';
+            strCard+='<h5>Dish Recipe Details:</h5>';
+            strCard+='<img src="'+cardsArr[index].img +'" alt="error">';
+            strCard+='<strong>Dish name: </strong>'+ cardsArr[index].name;
+            strCard+='<strong>Cooking method: </strong> '+cardsArr[index].cookingMethod ;
+            strCard+='<strong>Total cooking time:</strong> '+cardsArr[index].time +' min';
+            strCard+='<strong>Total calories: </strong>';
+            strCard+=CaloriesCalculation(index);
+            strCard+=' </strong>';
+            strCard+='<button onclick="ShowIng('+index+')" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Show Ingredients</button>';
+            strCard+='<div id="modalIng">';  
+            strCard+='</div>';
+            
+            strCard+='</div>';
+            document.getElementById("footer").innerHTML+=strCard;
+            }           
+            
+        }
+
+        //checkBox- add ingredient 
+        function check(index) {
+            
+            if (document.getElementById(index).checked==true) {
+                IngArr.push(index);
+            }
+            else {
+                IngArr.splice(index,1);
+            } 
+            
+        }
+        //calc the calories
+        function CaloriesCalculation(i) {
+            var cal=0;
+            for (let index = 0; index < cardsArr[i].ingredients.length; index++) {
+
+                for (let index2 = 0; index2 < ingredients.length; index2++) {
+                    if (ingredients[index2].id!=undefined) {
+                        if (cardsArr[i].ingredients[index]==ingredients[index2].id) {
+                    cal+=ingredients[index2].calories;
+                    }                
+                    
+                }
+
+                }            
+                
+            }
+            return cal;
+            
+        }
+        //show ingredients in recipe
+        function ShowIng(index) {
+            
+
+           var showRecipeIng='';
+           showRecipeIng+='<div class="modal fade" id="myModal" role="dialog">';
+           showRecipeIng+='<div class="modal-dialog">';
+           showRecipeIng+='<div class="modal-content">';
+           showRecipeIng+='<div class="modal-header">';
+           showRecipeIng+='<h4 class="modal-title">Ingredients Dedails</h4>';
+           showRecipeIng+='<button type="button" class="close" data-dismiss="modal">&times;</button>';            
+           showRecipeIng+='</div>';
+           showRecipeIng+='<div class="modal-body">';
+            for (let i = 0; i < cardsArr[index].ingredients.length; i++) {
+                for (let j = 0; j < ingredients.length; j++) {
+                    if (cardsArr[index].ingredients[i]==ingredients[j].id) {
+
+                showRecipeIng+='<div class="checkBox col-4">';
+                showRecipeIng+='<br><strong>ingredient details:</strong><br>';
+                showRecipeIng+='<img src="'+ingredients[j].img+'" alt="error"><br>';
+                showRecipeIng+=ingredients[j].name +'<br>';
+                showRecipeIng+='<p>calories: '+ingredients[j].calories+'</p>';                 
+                showRecipeIng+='</div>';
+
+                
+            }
+                    
+            }
+                              
+            }
+           showRecipeIng+='</div>';
+           showRecipeIng+='<div class="modal-footer">';
+           showRecipeIng+='<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
+           showRecipeIng+='</div>';
+           showRecipeIng+='</div>';
+           showRecipeIng+='</div>';
+           showRecipeIng+='</div>';
+           document.getElementById("modalIng").innerHTML=showRecipeIng;
+            
+            
+        }
+
+        // clean div main
+        function closeMain() {
+            var clean='';
+            document.getElementById("m1").innerHTML=clean;
+            document.getElementById("m2").innerHTML=clean;
+            document.getElementById("m3").innerHTML=clean;
+            
+        }
+        //create ingredient
+        function createIng() {
+            var name=document.getElementById("nameText").value;
+            var img=document.getElementById("imgText").value;
+            var calories=document.getElementById("caloriesText").value;
+            var id=ingredients.length;
+            var NewIng= new Ingredient(id,name,img,calories);
+            ingredients.push(NewIng);
+            closeMain();
+      
+        }
+        //create recipe
+        function createCard() {
+            var name=document.getElementById("RecName").value;
+            var ingredients=IngArr;
+            var time=document.getElementById("RecTime").value;
+            var cookingMethod=document.getElementById("RecMethod").value;
+            var img=document.getElementById("RecImg").value;
+            var NewCard= new DishRecipe(name,ingredients,time,cookingMethod,img);
+            cardsArr.push(NewCard);
+            RenderCards();
+            closeMain();
+      
+        }
+
+      
+
+    </script>
+</head>
+<body onload="init()">
+    <div class="row">
+     <div id="container" class="col-12">
+        <!-- Contains the header and buttons -->
+        <div class="row">
+        <div id="head" class="col-12"> 
+            
+        </div>
+        <div id="btns" class="col-12">
+            
+        </div>
+        </div>
+        <!-- Contains the out put of the events -->
+        <div class="row">
+        <div id="main" class="col-12">
+            <div id="m1" class="col-12"></div>
+            <div id="m2" class="col-12"></div>
+            <div id="m3" class="col-12"></div>
+        </div>
+        </div>
+        <!-- Shows the existing recipes -->
+        <div class="row">
+            <br><br>
+         <div id="footer" class="col-12"> 
+            
+         </div>
+        </div>
+
+    </div>
+    </div>
+    
+      
+       
+          
+            
+                
+              
+           
+              
+        
+        
+      
+      
+</body>
+</html>
